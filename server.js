@@ -20,11 +20,9 @@ if (fs.existsSync(dataPath)) {
 }
 
 // Получить все товары
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
+app.get('/api/products', (req, res) => res.json(products));
 
-// Добавить новый товар
+// Добавить товар
 app.post('/api/products', (req, res) => {
   const newProduct = { id: Date.now(), ...req.body };
   products.push(newProduct);
