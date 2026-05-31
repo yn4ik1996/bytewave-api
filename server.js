@@ -5,24 +5,35 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10080;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+console.log('✅ Server starting...');
 
 const dataPath = path.join(__dirname, 'products.json');
 
 let products = [];
 if (fs.existsSync(dataPath)) {
   products = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  console.log(`📦 Loaded ${products.length} products`);
 } else {
   fs.writeFileSync(dataPath, JSON.stringify([], null, 2));
+  console.log('📂 Created new products.json');
 }
 
-// Получить все товары
-app.get('/api/products', (req, res) => res.json(products));
+// Тестовый маршрут
+app.get('/', (req, res) => {
+  res.send('<h1>✅ ByteWave API is running!</h1><p>Try: <a href="/api/products">/api/products</a></p>');
+});
 
-// Добавить товар
+// Основной маршрут
+app.get('/api/products', (req, res) => {
+  console.log('GET /api/products called');
+  res.json(products);
+});
+
 app.post('/api/products', (req, res) => {
   const newProduct = { id: Date.now(), ...req.body };
   products.push(newProduct);
@@ -30,7 +41,6 @@ app.post('/api/products', (req, res) => {
   res.json(newProduct);
 });
 
-// Обновить товар
 app.put('/api/products/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const index = products.findIndex(p => p.id === id);
@@ -43,7 +53,6 @@ app.put('/api/products/:id', (req, res) => {
   }
 });
 
-// Удалить товар
 app.delete('/api/products/:id', (req, res) => {
   const id = parseInt(req.params.id);
   products = products.filter(p => p.id !== id);
@@ -52,5 +61,6 @@ app.delete('/api/products/:id', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Backend запущен на порту ${PORT}`);
+  console.log(`🚀 Backend успешно запущен на порту ${PORT}`);
+  console.log(`🌐 API доступно по адресу: https://bytewave-api-6rib.onrender.com`);
 });
